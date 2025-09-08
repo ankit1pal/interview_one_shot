@@ -1,0 +1,12 @@
+/* Minimal reset for the interview prep platform */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* Prevent body scroll since we use 100vh grid */
+}
+
+#root {
+  height: 100vh;
+  width: 100vw;
+}

@@ -1,0 +1,487 @@
+A Technical Interview Guide: Mastering 75 Foundational ProblemsIntroduction: A Framework for Algorithmic ExcellenceTechnical interviews at top-tier technology companies are designed to assess a candidate's problem-solving ability, not just their capacity for memorization. While familiarity with common problems is advantageous, true excellence lies in understanding the fundamental patterns that underpin hundreds of different questions. This guide is structured around the philosophy of pattern recognition, aiming to equip candidates with a versatile toolkit for deconstructing novel challenges. The most effective preparation strategy shifts the focus from "learning 75 solutions" to "mastering a dozen core algorithmic patterns."This approach is best visualized through a matrix that maps specific problems to their underlying patterns. Recognizing that 3Sum is an application of the Two Pointers pattern used in Two Sum, or that Search in Rotated Sorted Array is a Modified Binary Search, transforms a daunting list of problems into a manageable set of interconnected concepts.The Algorithmic Pattern MatrixCore PatternKey ProblemsCore InsightTwo PointersTwo Sum, 3Sum, Container With Most Water, Valid PalindromeConverging or same-direction pointers to efficiently explore pairs or subarrays in a sorted or linear structure.Sliding WindowLongest Substring Without Repeating Chars, Minimum Window SubstringAn expandable/contractible window to find optimal subarrays/substrings that satisfy a condition in linear time.Hash Map/SetTwo Sum, Contains Duplicate, Group Anagrams, Longest ConsecutiveUsing O(1) average time lookups to track seen elements, frequencies, or complements, trading space for time.Modified Binary SearchFind Min/Search in Rotated Sorted Array, Kth Smallest in BSTApplying binary search to non-traditional or partially sorted search spaces by intelligently eliminating halves.Dynamic ProgrammingClimbing Stairs, Coin Change, LIS, LCS, Word Break, House RobberBuilding up a solution by solving and memoizing overlapping subproblems, typically using a DP array/table.Graph Traversal (DFS/BFS)Number of Islands, Clone Graph, Course Schedule, Pacific AtlanticSystematically exploring nodes and edges to find paths, connectivity, or cycles.Binary & Bit ManipulationSum of Two Integers, Number of 1 Bits, Counting Bits, Reverse BitsLeveraging bitwise operators to achieve highly efficient, low-level computations without traditional arithmetic.Tree TraversalMaximum Depth, Same Tree, Invert Tree, Level Order TraversalSystematically visiting nodes (e.g., pre-order, in-order, post-order, level-order) to process or search tree structures.The Interview Narrative FrameworkA successful interview is a structured dialogue that showcases a candidate's thought process. Rather than jumping directly to a perfect, optimized solution, which can seem rehearsed, a superior approach is to guide the interviewer through a logical problem-solving journey. This narrative simulates the real-world engineering process of refining a simple idea into an efficient implementation.Understand & Clarify: Begin by asking questions to fully scope the problem. This demonstrates diligence and prevents incorrect assumptions about constraints and edge cases.1Brute-Force First: Propose and explain a simple, straightforward solution, even if it's inefficient. This establishes a baseline, proves a fundamental understanding of the problem, and ensures a working solution is on the table.3Analyze & Optimize: Articulate the time and space complexity of the brute-force approach, identifying the specific bottleneck (e.g., a nested loop). Then, propose a more efficient algorithm, explicitly discussing any trade-offs, most commonly sacrificing space for a faster runtime.3Implement & Test: Write clean, readable code for the optimized solution. Verbally walk through the implementation. Finally, perform a dry run with a concrete example to verify its correctness and demonstrate a meticulous attention to detail.Adopting this framework turns the interview from a high-pressure test of recall into a collaborative session that showcases problem-solving acumen, communication skills, and a mature engineering mindset.Part I: Array ProblemsArray-based questions are foundational in technical interviews. They are used to evaluate a candidate's grasp of basic data structures, complexity analysis, and core algorithmic patterns like two-pointers, hash maps, and sliding windows. Mastery of these problems is essential, as they often serve as building blocks for more complex challenges.Two Sum - Interview GuideProblemGiven an array of integers nums and an integer target, return the indices of the two numbers such that they add up to target. It is assumed that each input has exactly one solution, and the same element may not be used twice.61. Clarifying QuestionsInput Array Properties: Is the input array sorted? (No, which invalidates a simple two-pointer approach without sorting).7 Does the array contain duplicate numbers? (It can, but the solution requires two distinct indices). Can the numbers be negative? (Yes).6Output Requirements: What should be returned if no solution exists? (The problem statement guarantees exactly one solution, but in a real-world scenario, this is a critical question).8Constraints: Are there constraints on the size of the array or the range of values? (Yes, this can influence the choice between solutions if memory is a concern).62. Brute Force (The Starting Point)Approach: The most straightforward method is to check every possible pair of numbers in the array. This can be achieved with two nested loops. The outer loop iterates from the first element (i), and the inner loop iterates from the next element (j = i + 1) to the end of the array. In each inner loop iteration, the algorithm checks if nums[i] + nums[j] equals the target. If it does, the indices [i, j] are returned.10Time Complexity: O(n2). The nested loops result in a quadratic runtime, as for each element, the algorithm may have to scan through the rest of the array.3Space Complexity: O(1). This approach uses no additional data structures; the space required is constant regardless of the input array's size.33. Optimized Solution (The Hash Map Trade-off)Approach: The bottleneck in the brute-force solution is the search for the second number, which takes O(n) time. This search can be optimized to an average of O(1) time by using a hash map (or dictionary). The core idea is to transform the problem from finding a + b = target to finding if target - a exists for each element a.The algorithm iterates through the array a single time. For each element nums[i], it calculates the required complement: complement = target - nums[i]. It then checks if this complement exists as a key in the hash map.If the complement is found in the map, its stored value (the index) and the current index i form the solution.If the complement is not found, the current number nums[i] and its index i are added to the map for future lookups.7This one-pass approach is highly efficient because by the time the second number of the pair is encountered, the first number has already been stored in the hash map, allowing for an immediate lookup.14Time Complexity: O(n). The array is traversed only once. Each lookup and insertion into the hash map takes, on average, constant time.12Space Complexity: O(n). In the worst-case scenario, the hash map may store up to n−1 elements before a solution is found.12 This demonstrates a classic time-space trade-off, where improved runtime is achieved at the cost of increased memory usage.4. Code (C++)C++#include <vector>
+#include <unordered_map>
+
+class Solution {
+public:
+    std::vector<int> twoSum(std::vector<int>& nums, int target) {
+        // Use a hash map to store numbers we've seen and their indices.
+        // Key: number, Value: index
+        std::unordered_map<int, int> numMap;
+
+        for (int i = 0; i < nums.size(); ++i) {
+            // Calculate the complement needed to reach the target.
+            int complement = target - nums[i];
+
+            // Check if the complement exists in our map.
+            //.find() returns an iterator to the element if found, otherwise.end().
+            if (numMap.find(complement)!= numMap.end()) {
+                // If found, we have our pair. Return their indices.
+                return {numMap[complement], i};
+            }
+
+            // If complement is not found, add the current number and its index to the map.
+            // This prepares for future elements that might pair with the current one.
+            numMap[nums[i]] = i;
+        }
+
+        // According to the problem statement, a solution always exists.
+        // In a real-world scenario, we might throw an exception or return an empty vector.
+        return {};
+    }
+};
+5. Dry RunInput: nums = , target = 9i = 0, nums = 2:complement = 9 - 2 = 7.Is 7 in numMap? No, numMap is empty.Add 2 to map: numMap = {{2: 0}}.i = 1, nums = 7:complement = 9 - 7 = 2.Is 2 in numMap? Yes, at index 0.Solution found! Return {numMap, i} which is {0, 1}.Result: ``Interview Tips✅ Do: Start by explaining the O(n²) brute-force solution. This shows you understand the problem fundamentally. Then, identify the bottleneck (the linear search for the complement) and propose using a hash map to optimize the search to O(1), leading to an overall O(n) solution. This demonstrates a clear, structured thought process.3✅ Do: Discuss the time-space trade-off. Articulate that the O(n) solution is faster but requires O(n) extra space, making it ideal unless memory is extremely constrained.3❌ Avoid: Jumping straight to the hash map solution without explaining the reasoning or the brute-force alternative. This can make the solution seem memorized rather than derived.Best Time to Buy and Sell Stock - Interview GuideProblemGiven an array prices where prices[i] is the price of a stock on day i, find the maximum profit by choosing a single day to buy one stock and a different day in the future to sell it. If no profit can be made, return 0.191. Clarifying QuestionsTransaction Rules: Is it restricted to a single buy and a single sell? (Yes, this is the key constraint. Variants of this problem allow for multiple transactions).20Input Properties: Can the prices array be empty? (Constraints state 1 <= prices.length, but it's a good practice to ask). What should be returned if prices are always decreasing? (The problem states to return 0).19Output: Should the function return the maximum profit or the days to buy/sell? (Return the profit value).192. Brute Force (The Obvious Path)Approach: The most direct way to solve this is to consider every possible pair of buy and sell days. We can use nested loops. The outer loop (i) iterates through each day, fixing it as the potential buy day. The inner loop (j) iterates through all subsequent days (j > i), considering each as a potential sell day. For each pair, calculate the profit prices[j] - prices[i]. A variable maxProfit is maintained and updated whenever a larger profit is found. If the calculated profit is negative, it is ignored, as the initial maxProfit is 0.Time Complexity: O(n2). The two nested loops lead to a quadratic runtime as every valid pair of days is checked.Space Complexity: O(1). No extra data structures are used, only a few variables to store the current and maximum profit.3. Optimized Solution (Single Pass Greedy Approach)Approach: The brute-force method performs redundant calculations. A more efficient approach can solve this in a single pass. The core insight is that to maximize profit for a potential sale on day j, one must have bought the stock at the absolute minimum price on a day i < j.This leads to a greedy algorithm. Iterate through the prices array once, keeping track of two variables: min_price_so_far and max_profit.For each price in the array, first update min_price_so_far by comparing it with the current price.Then, calculate the potential profit if we were to sell on the current day: current_price - min_price_so_far.Update max_profit if this potential profit is greater than the current max_profit.23This single-pass approach ensures that for every potential sell day, we are always comparing against the lowest possible buy price encountered up to that point, guaranteeing the globally optimal solution.Time Complexity: O(n). The algorithm iterates through the array only once.26Space Complexity: O(1). Only two variables are needed to track the state.264. Code (C++)C++#include <vector>
+#include <algorithm>
+#include <limits>
+
+class Solution {
+public:
+    int maxProfit(std::vector<int>& prices) {
+        // Initialize min_price_so_far to a very large value to ensure the first price is lower.
+        int min_price_so_far = std::numeric_limits<int>::max();
+        int max_profit = 0;
+
+        for (int price : prices) {
+            // First, update the minimum price seen so far.
+            // This represents the best day to have bought the stock up to the current day.
+            min_price_so_far = std::min(min_price_so_far, price);
+
+            // Second, calculate the potential profit if we sell today.
+            // The profit is the current price minus the lowest price we could have bought at.
+            int potential_profit = price - min_price_so_far;
+
+            // Update the maximum profit if this transaction is better than any previous one.
+            max_profit = std::max(max_profit, potential_profit);
+        }
+
+        return max_profit;
+    }
+};
+5. Dry RunInput: prices = DayPricemin_price_so_farpotential_profitmax_profit0777 - 7 = 001111 - 1 = 002515 - 1 = 443313 - 1 = 244616 - 1 = 555414 - 1 = 35Result: 5Interview Tips✅ Do: Frame the optimized solution as a greedy algorithm. Explain that at each step (day), the algorithm makes a locally optimal decision (updating the minimum buy price) which ultimately leads to the globally optimal solution (the maximum possible profit).25✅ Do: Be prepared to discuss variations of the problem, such as allowing multiple transactions or transactions with a fee. Mentioning awareness of these variants (e.g., Best Time to Buy and Sell Stock II, III, IV) shows a broader understanding of the problem space.20❌ Avoid: Confusing the single-transaction rule. The core constraint is buying once and selling once. A common mistake is to try and accumulate profits from multiple smaller upswings, which is the correct approach for a different version of the problem.20Contains Duplicate - Interview GuideProblemGiven an integer array nums, return true if any value appears at least twice in the array, and return false if every element is distinct.281. Clarifying QuestionsInput Properties: What is the range of values in the array? (This might influence non-hashing solutions).29 Can the input array be empty? (Yes, the correct output would be false).30Performance: Are there specific time or space complexity constraints? (This is the central question that guides the choice of solution).292. Brute Force (The Baseline)Approach: The simplest method is to compare every element with every other element. Using nested loops, the outer loop selects an element nums[i], and the inner loop checks if nums[i] is equal to any subsequent element nums[j] (where j > i). If a match is found, the function immediately returns true. If the loops complete without finding any matches, it returns false.30Time Complexity: O(n2). Due to the nested loops, every pair of elements is compared in the worst case.5Space Complexity: O(1). No extra space proportional to the input size is required.53. Optimized SolutionsThis problem is a classic showcase for the time-space trade-off. There are two primary optimization strategies.Optimized Solution 1: SortingApproach: An improvement over the brute-force method involves sorting the array first. If there are any duplicate elements, they will be adjacent to each other after sorting. A single pass through the sorted array is then sufficient to check if any element nums[i] is equal to its neighbor nums[i+1]. If an adjacent pair is found, a duplicate exists.31Time Complexity: O(nlogn). The runtime is dominated by the sorting algorithm.Space Complexity: O(1) or O(n). This depends on the sorting algorithm used. In-place sorts like Heapsort achieve O(1) auxiliary space, while others like Timsort (used in Python) or Mergesort may require O(n) or O(logn) space, respectively. Mentioning this nuance demonstrates a deeper understanding.Optimized Solution 2: Hash SetApproach: The most time-efficient solution uses a hash set to achieve linear time complexity. The algorithm iterates through the nums array once. For each number, it attempts to add it to a hash set. A hash set only stores unique elements. The add (or insert) operation will return false (or the lookup will find the element) if the element is already present.The logic is: for each num in nums, check if num is already in the hash set.If it is, a duplicate has been found, and the function returns true.If it is not, add num to the set and continue to the next element.30Time Complexity: O(n). Each lookup and insertion into a hash set is an average constant time operation, and the array is traversed once.Space Complexity: O(n). In the worst case (an array with all unique elements), the hash set will store all n elements.4. Code (C++)C++#include <vector>
+#include <unordered_set>
+
+class Solution {
+public:
+    bool containsDuplicate(std::vector<int>& nums) {
+        // Use an unordered_set (hash set) to keep track of numbers we have seen.
+        std::unordered_set<int> seen;
+
+        for (int num : nums) {
+            // Check if the current number is already in the set.
+            //.count() is an efficient way to check for existence.
+            if (seen.count(num)) {
+                // If it exists, we have found a duplicate.
+                return true;
+            }
+            // If it's a new number, insert it into our set.
+            seen.insert(num);
+        }
+
+        // If we finish the loop without finding any duplicates, return false.
+        return false;
+    }
+};
+5. Dry RunInput: nums = num = 1:Is 1 in seen? No, seen is empty.Insert 1: seen = {1}.num = 2:Is 2 in seen? No.Insert 2: seen = {1, 2}.num = 3:Is 3 in seen? No.Insert 3: seen = {1, 2, 3}.num = 1:Is 1 in seen? Yes.Return true.Result: trueInterview Tips✅ Do: Explicitly present the different solutions as a series of trade-offs. "The brute-force approach is O(n²) time but O(1) space. We can improve the time to O(n log n) by sorting, which keeps space at O(1) for an in-place sort. For the fastest O(n) runtime, we can use a hash set, but this requires O(n) extra space. The best choice depends on the specific constraints of the application."✅ Do: Mention the alternative one-liner return nums.size()!= std::unordered_set<int>(nums.begin(), nums.end()).size();. Acknowledge that while concise, it is less efficient as it always builds the full set, whereas the iterative approach can return early as soon as the first duplicate is found.5❌ Avoid: Only presenting one solution. This problem is specifically designed to elicit a conversation about time vs. space complexity. Failing to discuss the alternatives misses the main point of the question.Product of Array Except Self - Interview GuideProblemGiven an integer array nums, return an array answer such that answer[i] is equal to the product of all the elements of nums except nums[i]. The algorithm must run in O(n) time and must not use the division operation.351. Clarifying QuestionsConstraints: What should be the output if the input array contains zeros? (The examples show how to handle this: if one zero exists, all elements in the output are zero except at the zero's index; if two or more zeros exist, all elements are zero).35 Is the output array counted towards the space complexity? (The follow-up specifies that it is not).35Data Types: Are the numbers integers? Can the product overflow standard integer types? (The problem guarantees the product of any prefix or suffix fits in a 32-bit integer).352. Brute Force (The Starting Point)Approach: The most direct approach is to iterate through the array for each element. For each index i, a second, nested loop iterates through the entire array again. Inside the inner loop, it calculates the product of all elements nums[j] where j!= i. This product is then stored in answer[i].37Time Complexity: O(n2). The nested loops result in a quadratic runtime, which fails the problem's O(n) constraint.37Space Complexity: O(1) (excluding the output array). No additional data structures are needed.A common but disallowed approach involves calculating the total product of all elements in one pass. Then, in a second pass, for each index i, answer[i] would be totalProduct / nums[i]. This is an O(n) solution, but it is explicitly forbidden by the "no division" rule and fails if the array contains zeros.363. Optimized Solution (Prefix and Suffix Products)Approach: The key insight to achieving an O(n) solution without division is to recognize that the product of all elements except nums[i] is the product of all elements to the left of i multiplied by the product of all elements to the right of i.37This suggests a two-pass approach.Prefix Pass (Left-to-Right): Create an output array answer. In the first pass, iterate from left to right. For each index i, answer[i] will store the product of all elements to the left of i. This can be done efficiently by maintaining a running prefix_product variable. answer[i] is set to the current prefix_product, and then the prefix_product is updated by multiplying it with nums[i].41Suffix Pass (Right-to-Left): In the second pass, iterate from right to left. Maintain a running suffix_product. For each index i, multiply the existing value in answer[i] (which currently holds the prefix product) by the suffix_product. Then, update the suffix_product by multiplying it with nums[i].41After these two passes, answer[i] will contain the product of its left-side elements and its right-side elements, which is the desired result. This approach cleverly uses the output array itself to store intermediate prefix products, thereby satisfying the O(1) extra space constraint.37Time Complexity: O(n). The algorithm consists of two separate, non-nested passes through the array, resulting in a linear runtime (O(n)+O(n)=O(n)).42Space Complexity: O(1) (excluding the output array). The solution modifies the output array in place and uses only a few extra variables for the running products.374. Code (C++)C++#include <vector>
+
+class Solution {
+public:
+    std::vector<int> productExceptSelf(std::vector<int>& nums) {
+        int n = nums.size();
+        std::vector<int> answer(n, 1);
+
+        // Pass 1: Calculate prefix products
+        // answer[i] will contain the product of all elements to the left of i.
+        int prefix_product = 1;
+        for (int i = 0; i < n; ++i) {
+            answer[i] = prefix_product;
+            prefix_product *= nums[i];
+        }
+
+        // Pass 2: Calculate suffix products and combine with prefix products
+        // At this point, answer[i] has the prefix product. We multiply it
+        // by the suffix product to get the final result.
+        int suffix_product = 1;
+        for (int i = n - 1; i >= 0; --i) {
+            answer[i] *= suffix_product;
+            suffix_product *= nums[i];
+        }
+
+        return answer;
+    }
+};
+5. Dry RunInput: nums = Initialization: answer = , n = 4.Pass 1 (Prefix Products):i = 0: prefix_product = 1. answer = 1. prefix_product becomes 1 * 1 = 1. answer is ``.i = 1: prefix_product = 1. answer = 1. prefix_product becomes 1 * 2 = 2. answer is ``.i = 2: prefix_product = 2. answer = 2. prefix_product becomes 2 * 3 = 6. answer is ``.i = 3: prefix_product = 6. answer = 6. prefix_product becomes 6 * 4 = 24. answer is ``.End of Pass 1: answer = Pass 2 (Suffix Products):i = 3: suffix_product = 1. answer *= 1 (is 6). suffix_product becomes 1 * 4 = 4. answer is ``.i = 2: suffix_product = 4. answer *= 4 (is 2 * 4 = 8). suffix_product becomes 4 * 3 = 12. answer is ``.i = 1: suffix_product = 12. answer *= 12 (is 1 * 12 = 12). suffix_product becomes 12 * 2 = 24. answer is ``.i = 0: suffix_product = 24. answer *= 24 (is 1 * 24 = 24). suffix_product becomes 24 * 1 = 24. answer is ``.Result: ``Interview Tips✅ Do: Start by mentioning the simple solution using division, and then immediately state that it's disallowed by the problem constraints. This shows a complete understanding of the problem space.36✅ Do: Clearly explain the prefix/suffix product logic. A good explanation is: "To find the product except self at index i, we need the product of everything before it and everything after it. We can compute all prefix products in one pass and all suffix products in another pass.".41✅ Do: Highlight the space optimization where the output array is used to store the prefix products first, and then updated in the second pass with the suffix products. This directly addresses the O(1) extra space follow-up question.44❌ Avoid: Getting stuck on the brute-force solution. The O(n) time constraint is a strong hint that a more clever, multi-pass approach is required.Maximum Subarray - Interview GuideProblemGiven an integer array nums, find the contiguous subarray (containing at least one number) which has the largest sum and return its sum.471. Clarifying QuestionsInput Properties: Can the array contain negative numbers? (Yes, this is the key challenge of the problem).48 Can the array be empty? (Constraints say 1 <= nums.length, so no).47 Does a subarray need to have at least one element? (Yes).49Output: Should the function return the sum or the subarray itself? (Return the sum).472. Brute Force (The Starting Point)Approach: The most straightforward solution is to generate every possible contiguous subarray, calculate the sum of each, and keep track of the maximum sum found. This can be implemented with two nested loops. The outer loop (i) determines the starting index of the subarray, and the inner loop (j) determines the ending index. For each (i, j) pair, a third loop (k) can sum the elements from i to j.49A slight optimization reduces this to two loops: the outer loop (i) still sets the start, but the inner loop (j) maintains a running sum as it extends the end of the subarray from i to n-1.50Time Complexity: O(n3) for the three-loop version, and O(n2) for the optimized two-loop version. Both are too slow for typical constraints.50Space Complexity: O(1). No extra space is needed beyond a few variables to store sums and indices.3. Optimized Solution (Kadane's Algorithm)Approach: This problem has a classic and elegant O(n) solution known as Kadane's Algorithm. It is a dynamic programming/greedy approach. The core insight is that as we iterate through the array, we maintain the maximum possible sum of a subarray ending at the current position.The algorithm uses two variables:current_max: The maximum sum of a subarray ending at the current index i.global_max: The maximum subarray sum found so far across the entire array.Iterate through the array. For each element num, we have two choices for the subarray ending at this position:Start a new subarray beginning with num.Extend the previous maximum subarray by adding num to it.So, current_max is updated to max(num, current_max + num). This elegantly handles negative numbers. If current_max becomes negative at any point, it means the subarray ending at the previous position is detrimental to future sums, so max(num, current_max + num) will effectively "reset" the subarray to start at num. After updating current_max, we update global_max with max(global_max, current_max).49Time Complexity: O(n). The algorithm involves a single pass through the array.54Space Complexity: O(1). Only a constant number of variables are used.544. Code (C++)C++#include <vector>
+#include <algorithm>
+#include <limits>
+
+class Solution {
+public:
+    int maxSubArray(std::vector<int>& nums) {
+        // Initialize global_max with the first element, as the subarray must contain at least one number.
+        int global_max = nums;
+        int current_max = nums;
+
+        // Start iterating from the second element.
+        for (int i = 1; i < nums.size(); ++i) {
+            int num = nums[i];
+            
+            // For the subarray ending at this position, we can either
+            // start a new subarray with the current number, or
+            // extend the previous subarray by adding the current number.
+            // If current_max was negative, this effectively resets the subarray.
+            current_max = std::max(num, current_max + num);
+            
+            // Update the overall maximum sum found so far.
+            global_max = std::max(global_max, current_max);
+        }
+        
+        return global_max;
+    }
+};
+5. Dry RunInput: nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4]inumcurrent_max = max(num, current_max + num)global_max = max(global_max, current_max)0-2Initial: -2Initial: -211max(1, -2 + 1) = 1max(-2, 1) = 12-3max(-3, 1 + -3) = -2max(1, -2) = 134max(4, -2 + 4) = 4max(1, 4) = 44-1max(-1, 4 + -1) = 3max(4, 3) = 452max(2, 3 + 2) = 5max(4, 5) = 561max(1, 5 + 1) = 6max(5, 6) = 67-5max(-5, 6 + -5) = 1max(6, 1) = 684max(4, 1 + 4) = 5max(6, 5) = 6Result: 6Interview Tips✅ Do: Clearly state the core logic of Kadane's algorithm: the maximum subarray ending at position i is either the element at i itself, or the element at i combined with the maximum subarray ending at i-1. This demonstrates a solid grasp of the dynamic programming principle involved.52✅ Do: Mention that this is a classic dynamic programming problem that has a highly optimized greedy solution. This shows depth of knowledge. The dp[i] = max(nums[i], dp[i-1] + nums[i]) recurrence is the DP formulation.56❌ Avoid: Initializing global_max or current_max to 0. If all numbers in the array are negative, the correct answer is the largest (least negative) number, not 0. Initializing with nums correctly handles this case.53Maximum Product Subarray - Interview GuideProblemGiven an integer array nums, find a contiguous non-empty subarray within the array that has the largest product, and return the product.581. Clarifying QuestionsInput Properties: Can the array contain zeros? (Yes, a zero will reset any running product).59 Can it contain negative numbers? (Yes, this is the main complexity, as two negatives make a positive).60Constraints: What is the range of values? (This is important for overflow considerations, although the problem guarantees the answer fits in a 32-bit integer).58Output: Should the function return the product or the subarray itself? (Return the product).582. Brute Force (The Starting Point)Approach: Similar to Maximum Subarray, the brute-force method involves checking every possible contiguous subarray. Using two nested loops, the outer loop (i) sets the start of the subarray, and the inner loop (j) extends the subarray to its end. Inside the inner loop, a current_product is maintained by multiplying nums[j] with the product of the subarray from i to j-1. The global_max_product is updated at each step.61Time Complexity: O(n2). The nested loops lead to a quadratic runtime.63Space Complexity: O(1). Only a few variables are needed to store the products.3. Optimized Solution (Modified Kadane's Algorithm)Approach: This problem is a variation of the Maximum Subarray problem, but the inclusion of negative numbers adds a twist. A large negative product can become a large positive product if multiplied by another negative number. Therefore, simply tracking the maximum product so far is not enough. We also need to track the minimum product so far. The minimum product might be a large negative number, which is exactly what we need to produce a large positive result when we encounter another negative number.61The algorithm iterates through the array once, maintaining three variables:global_max: The overall maximum product found so far.current_max: The maximum product of a subarray ending at the current position.current_min: The minimum product of a subarray ending at the current position.For each element num in the array:When we encounter a new num, the new current_max will be the maximum of three values: num itself (starting a new subarray), num * old_current_max, or num * old_current_min.Similarly, the new current_min will be the minimum of the same three values.The global_max is then updated with the new current_max.If num is 0, it breaks any existing subarray product. In this case, both current_max and current_min should be reset to 1 to start fresh from the next element (or handled by the max(num,...) logic if num is 0).60Time Complexity: O(n). A single pass through the array is required.62Space Complexity: O(1). We only use a few variables to track the state.624. Code (C++)C++#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    int maxProduct(std::vector<int>& nums) {
+        if (nums.empty()) {
+            return 0;
+        }
+
+        // Initialize global_max, and current min/max with the first element.
+        int global_max = nums;
+        int current_max = nums;
+        int current_min = nums;
+
+        for (int i = 1; i < nums.size(); ++i) {
+            int num = nums[i];
+
+            // Store the old current_max because we need it to calculate the new current_min.
+            int temp_max = current_max;
+
+            // The new max can be the number itself, or the product of the number
+            // with the previous max (for positive num) or previous min (for negative num).
+            current_max = std::max({num, num * temp_max, num * current_min});
+
+            // The new min can be the number itself, or the product of the number
+            // with the previous min (for positive num) or previous max (for negative num).
+            current_min = std::min({num, num * temp_max, num * current_min});
+
+            // Update the overall global maximum product.
+            global_max = std::max(global_max, current_max);
+        }
+
+        return global_max;
+    }
+};
+5. Dry RunInput: nums = [2, 3, -2, 4]inumtemp_maxcurrent_max = max({num, num*temp_max, num*current_min})current_min = min({num, num*temp_max, num*current_min})global_max02-Initial: 2Initial: 22132max({3, 3*2, 3*2}) = 6min({3, 3*2, 3*2}) = 362-26max({-2, -2*6, -2*3}) = max({-2, -12, -6}) = -2min({-2, -2*6, -2*3}) = min({-2, -12, -6}) = -12634-2max({4, 4*(-2), 4*(-12)}) = max({4, -8, -48}) = 4min({4, 4*(-2), 4*(-12)}) = min({4, -8, -48}) = -486Result: 6Interview Tips✅ Do: Start by drawing a parallel to the Maximum Subarray problem. Explain that while the logic is similar, the introduction of negative numbers requires tracking both the maximum and minimum subarray products at each step.65✅ Do: Walk through an example that includes negative numbers, like [-2, 3, -4], to demonstrate why tracking current_min is crucial. The maximum product (24) is derived from current_min * -4.65❌ Avoid: Forgetting to handle the case where the number itself could be the new current_max or current_min. This is important for "restarting" a subarray after a zero or when a product becomes very small. The max({num,...}) and min({num,...}) logic handles this correctly.66Find Minimum in Rotated Sorted Array - Interview GuideProblemSuppose an array of length n sorted in ascending order is rotated between 1 and n times. Given this sorted rotated array nums of unique elements, return the minimum element. The algorithm must run in O(logn) time.671. Clarifying QuestionsInput Properties: Are the elements in the array unique? (The problem states they are, which simplifies the logic. A variant of this problem includes duplicates).67 Can the array be un-rotated (i.e., fully sorted)? (Yes, rotated between 1 and n times, where n rotations return it to the original state).67Constraints: What is the size of the array? (The O(logn) requirement strongly suggests a binary search approach).672. Brute Force (The Starting Point)Approach: The simplest solution is to perform a linear scan of the array. Iterate through all elements and keep track of the minimum value seen so far. This approach is correct but does not meet the time complexity requirement.68Time Complexity: O(n). A single pass is made through the entire array.68Space Complexity: O(1). Only one variable is needed to store the minimum value.3. Optimized Solution (Modified Binary Search)Approach: The O(logn) time complexity constraint points directly to binary search. However, a standard binary search won't work because the array is not fully sorted. The key insight is that in a rotated sorted array, at least one half of the array (relative to the midpoint) will always be sorted.70The minimum element is the "pivot" or "inflection point" where the rotation occurs. We can use binary search to find this pivot.The algorithm uses two pointers, left and right, to define the search space.If nums[left] <= nums[right], the subarray is already sorted (or has one element), so the minimum is nums[left].Calculate the midpoint mid.Compare nums[mid] with one of the endpoints. A robust comparison is with nums[right]:If nums[mid] > nums[right], it means the pivot (the minimum element) must be in the right half of the array (from mid + 1 to right), because the left half (left to mid) is sorted and contains larger values than nums[right]. So, we discard the left half by setting left = mid + 1.If nums[mid] <= nums[right], it means the pivot is in the left half, including mid itself. The section from mid to right is sorted. The minimum could be nums[mid] or an element to its left. So, we discard the right half by setting right = mid.68The loop continues until left and right converge, at which point they will both point to the minimum element.Time Complexity: O(logn). Each step of the binary search halves the search space.73Space Complexity: O(1). The search is performed in-place with a few pointer variables.4. Code (C++)C++#include <vector>
+
+class Solution {
+public:
+    int findMin(std::vector<int>& nums) {
+        int left = 0;
+        int right = nums.size() - 1;
+
+        while (left < right) {
+            // If the current search space is already sorted, the minimum is at the left.
+            if (nums[left] < nums[right]) {
+                return nums[left];
+            }
+
+            int mid = left + (right - left) / 2;
+
+            // If mid element is greater than the right element,
+            // the pivot (minimum) must be in the right half.
+            if (nums[mid] > nums[right]) {
+                left = mid + 1;
+            } else {
+                // Otherwise, the pivot is in the left half, including mid.
+                // The section from mid to right is sorted.
+                right = mid;
+            }
+        }
+        
+        // When the loop ends, left and right converge on the minimum element.
+        return nums[left];
+    }
+};
+5. Dry RunInput: nums = Initial: left = 0, right = 6. nums[left] (4) > nums[right] (2).mid = 3. nums[mid] (7) > nums[right] (2). The pivot is to the right.left becomes mid + 1 = 4. Search space is now ``.left = 4, right = 6: nums[left] (0) < nums[right] (2). The subarray `` is sorted.The loop condition nums[left] < nums[right] is met.Return nums[left], which is 0.Result: 0Interview Tips✅ Do: Draw the array visually to explain the logic. Show how the array consists of two sorted portions and how comparing the middle element to an endpoint reliably tells you which portion contains the minimum value.70✅ Do: Be precise about pointer updates. Explain why right = mid is used instead of right = mid - 1. This is because nums[mid] could itself be the minimum element, so we must include it in the next search space.68❌ Avoid: Getting confused by which element to compare nums[mid] against. Comparing with nums[right] is generally a robust strategy. Comparing with nums[left] also works but requires slightly different logic. Stick to one consistent approach and explain it clearly.Search in Rotated Sorted Array - Interview GuideProblemGiven an integer array nums sorted in ascending order (with distinct values) that is possibly rotated at an unknown pivot, and an integer target, return the index of target if it is in nums, or -1 if it is not. The algorithm must have a runtime complexity of O(logn).741. Clarifying QuestionsInput Properties: Are the values in the array distinct? (Yes, the problem states this, which simplifies the binary search logic).74 Can the array be un-rotated? (Yes).75Output: What should be returned if the target is not found? (-1).74Constraints: The O(logn) runtime is a mandatory constraint.742. Brute Force (The Starting Point)Approach: A simple linear scan through the array. Iterate from the beginning to the end, and for each element, check if it equals the target. If a match is found, return its index. If the loop completes without finding the target, return -1.76Time Complexity: O(n). This does not meet the problem's requirement.78Space Complexity: O(1).3. Optimized Solution (Modified Binary Search)Approach: This problem builds directly on the logic from "Find Minimum in Rotated Sorted Array." The O(logn) constraint mandates a binary search. The core challenge is to determine which half of the search space to discard at each step, given the rotation.The key insight remains the same: when the array is split at a midpoint mid, at least one of the two halves (left to mid, or mid to right) must be sorted.79The algorithm proceeds as follows within a binary search loop:Calculate the midpoint mid. If nums[mid] == target, return mid.Determine which half is sorted. This is typically done by comparing nums[left] with nums[mid].Case 1: The left half (nums[left] to nums[mid]) is sorted. (nums[left] <= nums[mid])Check if the target lies within the range of this sorted half (i.e., nums[left] <= target < nums[mid]).If yes, the target must be in the left half, so discard the right half: right = mid - 1.If no, the target must be in the unsorted right half, so discard the left half: left = mid + 1.Case 2: The right half (nums[mid] to nums[right]) is sorted. (nums[left] > nums[mid])Check if the target lies within the range of this sorted right half (i.e., nums[mid] < target <= nums[right]).If yes, the target must be in the right half, so discard the left half: left = mid + 1.If no, the target must be in the unsorted left half, so discard the right half: right = mid - 1.This process continues until the pointers cross, at which point if the target has not been found, it does not exist in the array.76Time Complexity: O(logn). Each step reduces the search space by half.75Space Complexity: O(1). The search is done in-place.754. Code (C++)C++#include <vector>
+
+class Solution {
+public:
+    int search(std::vector<int>& nums, int target) {
+        int left = 0;
+        int right = nums.size() - 1;
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+
+            if (nums[mid] == target) {
+                return mid;
+            }
+
+            // Case 1: The left half of the search space is sorted.
+            if (nums[left] <= nums[mid]) {
+                // Check if the target is within the sorted left half.
+                if (target >= nums[left] && target < nums[mid]) {
+                    right = mid - 1; // Search left.
+                } else {
+                    left = mid + 1; // Search right.
+                }
+            } 
+            // Case 2: The right half of the search space is sorted.
+            else {
+                // Check if the target is within the sorted right half.
+                if (target > nums[mid] && target <= nums[right]) {
+                    left = mid + 1; // Search right.
+                } else {
+                    right = mid - 1; // Search left.
+                }
+            }
+        }
+
+        return -1; // Target not found.
+    }
+};
+5. Dry RunInput: nums = , target = 0Initial: left = 0, right = 6.mid = 3. nums[mid] is 7. Not the target.Left half (nums to nums) is sorted (4 <= 7).Is target (0) in ``? No.Search right half: left = mid + 1 = 4.left = 4, right = 6:mid = 5. nums[mid] is 1. Not the target.Left half (nums to nums) is sorted (0 <= 1).Is target (0) in `` is 0. This is the target.Return mid, which is 4.Result: 4Interview Tips✅ Do: Clearly state the core invariant of the algorithm: "In any rotated sorted array, if you split it at the middle, at least one of the halves will be perfectly sorted. My strategy is to first identify that sorted half and then check if the target could possibly lie within it.".79✅ Do: Use clear and inclusive/exclusive range notation when explaining the logic. For example, "If the target is in the range [nums[left], nums[mid]), we search the left side." This precision prevents off-by-one errors and demonstrates clarity of thought.76❌ Avoid: Trying to first find the pivot and then doing a separate binary search. While this approach works and is also O(logn), it requires two passes. The single-pass modified binary search is considered more elegant and is what interviewers typically look for.823Sum - Interview GuideProblemGiven an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that i!= j, i!= k, and j!= k, and nums[i] + nums[j] + nums[k] == 0. The solution set must not contain duplicate triplets.841. Clarifying QuestionsInput Properties: Can the array contain duplicate numbers? (Yes, and this is a key challenge to handle for the output).85 Is the array sorted? (No, sorting will be a necessary first step for an efficient solution).86Output Requirements: Does the order of triplets in the output matter? (No).84 Does the order of elements within a triplet matter? (No, [-1, 0, 1] is the same as [1, 0, -1]).85 What should be returned if no such triplets exist? (An empty list).842. Brute Force (The Starting Point)Approach: The most direct solution is to check every unique combination of three elements. This can be done with three nested loops. The outer loop iterates for the first element (i), the second loop for the second element (j > i), and the third loop for the third element (k > j). Inside the innermost loop, check if nums[i] + nums[j] + nums[k] == 0. To handle duplicate triplets in the output, the found triplet can be sorted and inserted into a set data structure, which only stores unique elements.86Time Complexity: O(n3). The three nested loops lead to a cubic runtime. If a set is used, each insertion takes an additional O(logk) where k is the number of unique triplets, making it O(n3logk).86Space Complexity: O(k) or O(n). The space is required for the set to store the unique triplets. In the worst case, this could be proportional to the number of input elements.3. Optimized Solution (Sort and Two Pointers)Approach: This problem can be efficiently solved by reducing it to a Two Sum problem. The key is to sort the array first. Sorting allows us to use the two-pointer technique and easily handle duplicates.88The algorithm is as follows:Sort the array nums. This costs O(nlogn).Iterate through the sorted array with a loop, fixing the first element of the potential triplet, nums[i].For each nums[i], the problem becomes finding two numbers in the rest of the array (from index i+1 to n-1) that sum up to -nums[i]. This is the Two Sum II problem.Use two pointers, left = i + 1 and right = n - 1, on the remaining part of the array.If nums[left] + nums[right] is less than the target (-nums[i]), we need a larger sum, so increment left.If the sum is greater than the target, we need a smaller sum, so decrement right.If the sum is equal to the target, a valid triplet has been found. Add it to the results.Handle Duplicates: This is a crucial part.To avoid duplicate triplets from the first element, if nums[i] is the same as nums[i-1], skip it.After finding a valid triplet, to avoid duplicates from the second and third elements, advance the left pointer while it's equal to the next element, and similarly for the right pointer.88Time Complexity: O(n2). Sorting takes O(nlogn). The main part of the algorithm is the outer loop which runs n times, and the inner two-pointer scan which takes O(n) time. Thus, the total complexity is O(nlogn+n2), which simplifies to O(n2).86Space Complexity: O(1) or O(n), depending on the space complexity of the sorting algorithm used. The pointers themselves use constant extra space.864. Code (C++)C++#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    std::vector<std::vector<int>> threeSum(std::vector<int>& nums) {
+        std::vector<std::vector<int>> result;
+        if (nums.size() < 3) {
+            return result;
+        }
+
+        // 1. Sort the array
+        std::sort(nums.begin(), nums.end());
+
+        for (int i = 0; i < nums.size() - 2; ++i) {
+            // 2. Skip duplicate first elements
+            if (i > 0 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+
+            int left = i + 1;
+            int right = nums.size() - 1;
+            int target = -nums[i];
+
+            // 3. Use two-pointer approach
+            while (left < right) {
+                int sum = nums[left] + nums[right];
+
+                if (sum < target) {
+                    left++;
+                } else if (sum > target) {
+                    right--;
+                } else {
+                    // Found a triplet
+                    result.push_back({nums[i], nums[left], nums[right]});
+                    
+                    // 4. Skip duplicate second and third elements
+                    while (left < right && nums[left] == nums[left + 1]) {
+                        left++;
+                    }
+                    while (left < right && nums[right] == nums[right - 1]) {
+                        right--;
+                    }
+                    
+                    // Move pointers to find new unique pairs
+                    left++;
+                    right--;
+                }
+            }
+        }
+        return result;
+    }
+};
+5. Dry RunInput: nums = [-1, 0, 1, 2, -1, -4]Sort nums: [-4, -1, -1, 0, 1, 2]i = 0, nums[i] = -4: target = 4.left = 1, right = 5. nums[left] + nums[right] = -1 + 2 = 1. Too small, left++.left = 2, right = 5. nums[left] + nums[right] = -1 + 2 = 1. Too small, left++.left = 3, right = 5. nums[left] + nums[right] = 0 + 2 = 2. Too small, left++.left = 4, right = 5. nums[left] + nums[right] = 1 + 2 = 3. Too small, left++.left (5) is not less than right (5). Loop ends. No triplets for -4.i = 1, nums[i] = -1: target = 1.left = 2, right = 5. nums[left] + nums[right] = -1 + 2 = 1. Match!Add [-1, -1, 2] to result.Skip duplicates: left stays at 2. right stays at 5.Move pointers: left++ (now 3), right-- (now 4).left = 3, right = 4. nums[left] + nums[right] = 0 + 1 = 1. Match!Add [-1, 0, 1] to result.Move pointers: left++ (now 4), right-- (now 3).left (4) is not less than right (3). Loop ends.i = 2, nums[i] = -1: nums[i] == nums[i-1]. Skip duplicate.i = 3, nums[i] = 0: target = 0.left = 4, right = 5. nums[left] + nums[right] = 1 + 2 = 3. Too large, right--.left (4) is not less than right (4). Loop ends.Result: [[-1, -1, 2], [-1, 0, 1]]Interview Tips✅ Do: Frame the solution as a reduction of 3Sum to 2Sum. "By sorting the array and then iterating through it, for each element a, we can transform the problem into finding a pair (b, c) such that b + c = -a in the remainder of the array. This is a classic 2Sum problem that can be solved efficiently with two pointers.".87✅ Do: Pay close attention to the duplicate handling logic. Clearly explain the two separate mechanisms: one for skipping the fixed element i, and another for skipping the left and right elements after a match is found. This is often a major stumbling block for candidates.89❌ Avoid: Forgetting to sort the array first. The two-pointer technique is entirely dependent on the sorted property of the array.Container With Most Water - Interview GuideProblemGiven an integer array height of length n, where height[i] represents the height of a vertical line at position i. Find two lines that, together with the x-axis, form a container that can hold the most water. Return the maximum amount of water.931. Clarifying QuestionsInput Properties: Can the heights be zero? (Yes, 0 <= height[i]).93 What is the minimum number of lines? (At least 2).93Output: Should the function return the area or the indices of the lines? (Return the maximum area).94Geometry: The container cannot be slanted. The amount of water is determined by the shorter of the two lines (height) and the distance between them (width).932. Brute Force (The Starting Point)Approach: The most direct method is to calculate the area for every possible pair of vertical lines. This can be done with nested loops. The outer loop (i) fixes the left line, and the inner loop (j) iterates through all possible right lines (j > i). For each pair, the area is calculated as (j - i) * min(height[i], height[j]). A variable maxArea keeps track of the largest area found.95Time Complexity: O(n2). Every pair of lines is considered.95Space Complexity: O(1). No extra data structures are required.3. Optimized Solution (Two Pointers)Approach: The brute-force approach is inefficient because it re-evaluates many suboptimal pairs. A more efficient, linear-time solution can be achieved using the two-pointer technique.The algorithm starts with the widest possible container by placing one pointer (left) at the beginning of the array and another (right) at the end. It then iteratively moves one of the pointers inward until they meet.94Initialize left = 0, right = n - 1, and maxArea = 0.While left < right:a. Calculate the current area: width = right - left, h = min(height[left], height[right]), currentArea = width * h.b. Update maxArea = max(maxArea, currentArea).c. Move the pointer corresponding to the shorter line. If height[left] < height[right], increment left. Otherwise, decrement right.The core insight lies in step 2c. The area of a container is limited by its shorter line. If we move the pointer of the taller line inward, the width will decrease, and the height will either stay the same or decrease (if the new line is shorter). Thus, the area cannot possibly increase. By moving the pointer of the shorter line, we discard it as a limiting factor and create an opportunity to find a taller line that might compensate for the reduced width, potentially forming a larger container.98Time Complexity: O(n). Each pointer traverses the array at most once.95Space Complexity: O(1). The algorithm uses only a constant amount of extra space.954. Code (C++)C++#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    int maxArea(std::vector<int>& height) {
+        int left = 0;
+        int right = height.size() - 1;
+        int max_area = 0;
+
+        while (left < right) {
+            // Calculate the width of the container.
+            int width = right - left;
+            
+            // The height is limited by the shorter of the two lines.
+            int h = std::min(height[left], height[right]);
+            
+            // Calculate the area for the current container.
+            int current_area = width * h;
+            
+            // Update the maximum area found so far.
+            max_area = std::max(max_area, current_area);
+            
+            // Move the pointer that points to the shorter line.
+            // This is the greedy choice that drives the algorithm.
+            if (height[left] < height[right]) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+        
+        return max_area;
+    }
+};
+5. Dry RunInput: height = leftrightheight[l]height[r]widthhareamax_areaMove08178188left++1887774949right--1783631849right--1688584049right--1584441649right--...........................The process continues until left meets right.Result: 49Interview Tips✅ Do: Clearly explain the intuition behind moving the pointer of the shorter line. "The current area is constrained by the shorter line. Moving the taller line's pointer inward will only decrease the width without any chance of increasing the height, so the area can only decrease. By moving the shorter line's pointer, we are exploring the possibility of finding a taller line that could create a larger area, despite the smaller width.".98✅ Do: Start with the two pointers at the maximum possible width. This is a key part of the greedy strategy, as it maximizes one of the two factors (width) from the beginning.❌ Avoid: Simply stating the rule ("move the shorter one") without explaining why it's the correct greedy choice. The proof of this choice is the core of the problem's elegant solution.Part II: Binary & Bit ManipulationBit manipulation problems test a candidate's understanding of low-level data representation and operations. They are often used to gauge a deeper computer science foundation. Solutions are typically highly efficient and require thinking about numbers in their binary form.Sum of Two Integers - Interview GuideProblemGiven two integers a and b, return their sum without using the operators + and -.1001. Clarifying QuestionsInput Properties: Can the integers be negative or zero? (Yes).101Constraints: What is the integer range? (Typically 32-bit integers. This is important for handling negative numbers and potential overflows, especially in languages like Python with arbitrary-precision integers).1012. Brute Force (Conceptual)A true "brute force" is not applicable here as the primary arithmetic operators are disallowed. Any solution must inherently use an alternative method of addition. The problem directly forces a move to a more fundamental level of computation.3. Optimized Solution (Bit Manipulation)Approach: The solution lies in simulating how a computer's hardware (a full adder) performs addition at the bit level. Addition can be broken down into two components: the sum without considering carries, and the carries themselves.103Sum without Carry (XOR): The bitwise XOR (^) operation perfectly mimics addition of two bits without a carry.0 ^ 0 = 0 (0+0=0)0 ^ 1 = 1 (0+1=1)1 ^ 0 = 1 (1+0=1)1 ^ 1 = 0 (1+1=10, sum bit is 0)Carry (AND and Left Shift): A carry is generated only when both bits are 1. The bitwise AND (&) operation identifies these positions. The carry must then be shifted one position to the left (<< 1) because it affects the next significant bit.104The algorithm iteratively applies these two steps. The initial sum is a ^ b, and the initial carry is (a & b) << 1. In the next iteration, we need to "add" this new sum and the carry. We repeat the process until the carry becomes zero, at which point the sum variable holds the final result.106Time Complexity: O(1). For fixed-size integers (e.g., 32-bit), the number of iterations is bounded by the number of bits. Therefore, the complexity is constant with respect to the magnitude of the input numbers.108Space Complexity: O(1). The algorithm uses a fixed number of variables.4. Code (C++)C++class Solution {
+public:
+    int getSum(int a, int b) {
+        while (b!= 0) {
+            // 'carry' will have set bits only where both a and b have set bits.
+            // We use unsigned int to prevent undefined behavior on left-shifting a negative number.
+            unsigned int carry = a & b;
+            
+            // 'a' becomes the sum of a and b without considering the carry.
+            a = a ^ b;
+            
+            // 'b' becomes the carry, shifted one position to the left.
+            // This carry will be added to 'a' in the next iteration.
+            b = carry << 1;
+        }
+        // The loop terminates when there are no more carries to add.
+        return a;
+    }
+};
+5. Dry RunInput: a = 2, b = 3Binary: a = 0010, b = 0011Iteration 1:carry = a & b -> 0010 & 0011 = 0010a = a ^ b -> 0010 ^ 0011 = 0001b = carry << 1 -> 0010 << 1 = 0100State: a = 1, b = 4Iteration 2:carry = a & b -> 0001 & 0100 = 0000a = a ^ b -> 0001 ^ 0100 = 0101b = carry << 1 -> 0000 << 1 = 0000State: a = 5, b = 0Loop ends because b == 0.Result: 5Interview Tips✅ Do: Clearly explain the analogy to manual binary addition. "Just like adding on paper, we can separate the process into two parts: calculating the sum for each column (which XOR does) and calculating the carry to the next column (which AND and left-shift does).".104✅ Do: Be prepared to discuss how this works with negative numbers. Explain that standard two's complement representation allows the same bitwise logic to handle both positive and negative integers seamlessly.102❌ Avoid: Simply writing the code without explaining the underlying logic of the bitwise operators. The interviewer is testing the understanding of binary arithmetic, not just memorization of a clever trick.Number of 1 Bits - Interview GuideProblemWrite a function that takes an unsigned integer and returns the number of '1' bits it has (also known as the Hamming weight).1091. Clarifying QuestionsInput Properties: Is the input guaranteed to be a positive integer or unsigned? (The problem states unsigned, which is important).109Performance: Is this function expected to be called many times? (The follow-up question suggests considering optimizations for frequent calls).1092. Brute Force (Bit-by-Bit Check)Approach: The most straightforward method is to check each of the 32 bits of the integer. A loop can run 32 times. In each iteration, we can check the least significant bit (LSB). The LSB can be isolated using a bitwise AND with 1 (n & 1). If the result is 1, we increment a counter. After checking the LSB, we right-shift the number (n >>= 1) to move the next bit into the LSB position. This process repeats for all 32 bits.110Time Complexity: O(1) or O(k), where k is the number of bits in the integer type (e.g., 32 or 64). Since the number of bits is fixed, the complexity is constant.Space Complexity: O(1).3. Optimized Solution (Brian Kernighan's Algorithm)Approach: A more clever and often more efficient approach is to remove the rightmost '1' bit in each step, rather than checking every single bit. The number of times this operation can be performed before the number becomes 0 is equal to the number of '1' bits.The key operation is n & (n - 1). This expression has the effect of turning off (clearing) the rightmost set bit.Why it works: Subtracting 1 from a number flips the rightmost '1' bit to a '0' and all the '0' bits to its right to '1's. For example, if n = 12 (binary 1100), then n - 1 = 11 (binary 1011). When you AND them (1100 & 1011), the result is 1000. The rightmost '1' has been cleared.112The algorithm is simple: in a loop, repeatedly apply n = n & (n - 1) and increment a counter until n becomes 0.Time Complexity: O(m), where m is the number of set bits (the Hamming weight). This is more efficient than the bit-by-bit check when the number of set bits is small compared to the total number of bits.110 For a fixed-size integer, this is still technically O(1).Space Complexity: O(1).4. Code (C++)C++#include <cstdint>
+
+class Solution {
+public:
+    int hammingWeight(uint32_t n) {
+        int count = 0;
+        while (n!= 0) {
+            // This operation clears the least significant set bit.
+            n = n & (n - 1);
+            // Each time we perform this, we have eliminated one '1' bit.
+            count++;
+        }
+        return count;
+    }
+};
+5. Dry RunInput: n = 11 (binary 1011)Initial: count = 0, n = 1011.Iteration 1:n - 1 is 1010.n = n & (n - 1) -> 1011 & 1010 = 1010.count becomes 1.Iteration 2:n is 1010. n - 1 is 1001.n = n & (n - 1) -> 1010 & 1001 = 1000.count becomes 2.Iteration 3:n is 1000. n - 1 is 0111.n = n & (n - 1) -> 1000 & 0111 = 0000.count becomes 3.Loop ends because n is now 0.Result: 3Interview Tips✅ Do: Start with the simple bit-by-bit check and right-shift method. It's correct and easy to understand. Then, introduce the n & (n - 1) trick as a more efficient optimization, explaining why it works. This follows the ideal interview narrative.114✅ Do: Address the follow-up question: "If this function is called many times, how would you optimize it?". This hints at precomputation. One could precompute the bit counts for all 8-bit numbers (0-255) and store them in a lookup table. Then, a 32-bit integer can be processed in four 8-bit chunks, using four table lookups and summing the results. This trades memory for even faster computation in a high-frequency scenario.113❌ Avoid: Using built-in functions like __builtin_popcount in C++ without mentioning it. While it's the most practical solution in a real-world setting, interviewers want to see an understanding of the underlying algorithm. Mention it as an alternative after explaining a manual implementation.Counting Bits - Interview GuideProblemGiven an integer n, return an array ans of length n + 1 such that for each i (from 0 to n), ans[i] is the number of '1's in the binary representation of i.1151. Clarifying QuestionsInput: What is the maximum value of n? (Constraints are up to 105, so an efficient solution is required).115Output: The output should be an array of size n + 1? (Yes).115Constraints: The follow-up explicitly asks for a linear time O(n) solution, preferably in a single pass, and without using built-in popcount functions.1152. Brute Force (The Starting Point)Approach: The most straightforward solution is to iterate from i = 0 to n. For each number i, calculate its Hamming weight (number of '1' bits) using one of the methods from the "Number of 1 Bits" problem (e.g., the x & (x - 1) trick). Store each result in the ans array.116Time Complexity: O(nlogn). The outer loop runs n times. Inside the loop, counting the bits of a number i takes O(logi) time (proportional to the number of bits in i). This does not meet the follow-up requirement.115Space Complexity: O(n) for the output array.3. Optimized Solution (Dynamic Programming)Approach: The O(n) requirement suggests that we should reuse previously computed results. This is a classic dynamic programming problem. Let dp[i] be the number of '1' bits in i. We can find a recurrence relation to compute dp[i] based on smaller values.There are several related DP insights:Rightmost Bit: The number of '1's in i is the number of '1's in i / 2 (which is i >> 1) plus the value of the rightmost bit of i (which is i % 2 or i & 1).Recurrence: dp[i] = dp[i >> 1] + (i & 1).117Highest Power of 2: The number of '1's in i is 1 + the number of '1's in i - offset, where offset is the largest power of 2 less than or equal to i. For example, the bit count for 9 (1001) is 1 + the bit count for 1 (0001), where the offset is 8 (1000).Clearing the LSB: The number of '1's in i is 1 + the number of '1's in i & (i - 1).Recurrence: dp[i] = dp[i & (i - 1)] + 1.The first recurrence relation is the most intuitive and easiest to implement. We can build the dp array (our ans array) from 0 up to n. For each i, the value dp[i >> 1] has already been computed, so we can calculate dp[i] in O(1) time.Time Complexity: O(n). We iterate from 1 to n once, and each calculation is a constant time operation.118Space Complexity: O(n) for the output array.4. Code (C++)C++#include <vector>
+
+class Solution {
+public:
+    std::vector<int> countBits(int n) {
+        // ans array will serve as our DP table.
+        // Initialize with size n+1 and all values to 0.
+        std::vector<int> ans(n + 1, 0);
+
+        // Iterate from 1 to n to fill the DP table.
+        // ans is already 0, which is correct.
+        for (int i = 1; i <= n; ++i) {
+            // The number of set bits in 'i' is the number of set bits
+            // in 'i' right-shifted by 1 (i.e., i / 2), plus the
+            // value of the new least significant bit of 'i'.
+            // (i & 1) isolates the LSB, which is 1 if i is odd, 0 if even.
+            ans[i] = ans[i >> 1] + (i & 1);
+        }
+
+        return ans;
+    }
+};
+5. Dry RunInput: n = 5Initialization: ans = i = 1: ans = ans[1 >> 1] + (1 & 1) = ans + 1 = 0 + 1 = 1. ans is ``.i = 2: ans = ans[2 >> 1] + (2 & 1) = ans + 0 = 1 + 0 = 1. ans is ``.i = 3: ans = ans[3 >> 1] + (3 & 1) = ans + 1 = 1 + 1 = 2. ans is ``.i = 4: ans = ans[4 >> 1] + (4 & 1) = ans + 0 = 1 + 0 = 1. ans is ``.i = 5: ans = ans[5 >> 1] + (5 & 1) = ans + 1 = 1 + 1 = 2. ans is ``.Result: ``Interview Tips✅ Do: Start by explaining the O(nlogn) brute-force solution to establish a baseline. Then, pivot to the O(n) DP solution as requested by the follow-up. This demonstrates an ability to optimize.✅ Do: Clearly explain the DP recurrence relation. "We can observe a pattern. The number of set bits for any integer i is closely related to the number of set bits for i/2. Specifically, it's the same count, plus one if i is odd." This shows you can identify and leverage patterns in the problem structure.114❌ Avoid: Only providing the DP solution without being able to explain why the recurrence relation holds. The interviewer is testing the thought process behind discovering the pattern, not just the final code.Missing Number - Interview GuideProblemGiven an array nums containing n distinct numbers in the range [0, n], return the only number in the range that is missing from the array.1191. Clarifying QuestionsInput Properties: Are the numbers guaranteed to be distinct? (Yes).119 Is the range always [0, n] where n is the number of elements? (Yes).119Constraints: The follow-up asks for a solution with O(1) extra space and O(n) runtime complexity.1192. Brute Force (The Starting Point)Approach: The most straightforward method is to check for the presence of each number in the expected range. Iterate with a loop from i = 0 to n. For each i, perform a linear search through the nums array to see if i is present. If, after searching the entire array, i is not found, then i is the missing number.120Time Complexity: O(n2). The outer loop runs n+1 times, and the inner linear search takes O(n) time.120Space Complexity: O(1).A slightly better approach uses a hash set. First, insert all numbers from nums into a hash set. Then, loop from i = 0 to n and check if i is in the set. The first number not found is the missing one. This improves time but violates the space constraint.Time Complexity: O(n).Space Complexity: O(n).1223. Optimized SolutionsThere are two common ways to solve this problem while adhering to the O(n) time and O(1) space constraints.Optimized Solution 1: Gauss's Formula (Summation)Approach: This method leverages a mathematical property. The sum of the first n integers from 0 to n can be calculated with the formula n * (n + 1) / 2. The algorithm first calculates this expected sum. Then, it iterates through the nums array and calculates the actual sum of its elements. The difference between the expected sum and the actual sum is the missing number.124Time Complexity: O(n). One pass to calculate the actual sum is required.124Space Complexity: O(1). Only a few variables are needed to store the sums.Potential Pitfall: For very large n, the sum could potentially overflow a standard integer type. This is a good point to mention in an interview.Optimized Solution 2: Bit Manipulation (XOR)Approach: This is a very elegant solution that uses the properties of the XOR operator: x ^ x = 0 and x ^ 0 = x. The idea is to XOR all the numbers in the expected range [0, n] together, and then XOR that result with all the numbers in the actual nums array. Every number that is present in both the range and the array will be XORed with itself, effectively canceling out to 0. The only number remaining from the XOR operations will be the one that was missing from the nums array.120Time Complexity: O(n). The algorithm iterates through the array and the range [0, n] once.126Space Complexity: O(1). Only one variable is needed to accumulate the XOR result.4. Code (C++ - XOR Method)C++#include <vector>
+#include <numeric>
+
+class Solution {
+public:
+    int missingNumber(std::vector<int>& nums) {
+        // Initialize result with n. This handles the case where n is the missing number
+        // and ensures the full range [0, n] is included in the XOR sum.
+        int missing = nums.size();
+        
+        for (int i = 0; i < nums.size(); ++i) {
+            // XOR the expected index 'i' with the actual number at that index 'nums[i]'.
+            // Over the loop, every number that is present will be XORed with its
+            // corresponding index, effectively canceling pairs out.
+            // The missing number's index will be XORed, but its value won't be,
+            // leaving it in the final result.
+            missing ^= i ^ nums[i];
+        }
+        
+        return missing;
+    }
+};
+5. Dry Run (XOR Method)Input: nums =  (n = 3)Initialization: missing = 3.i = 0: missing = missing ^ 0 ^ nums -> 3 ^ 0 ^ 3 = 0.i = 1: missing = missing ^ 1 ^ nums -> 0 ^ 1 ^ 0 = 1.i = 2: missing = missing ^ 2 ^ nums -> 1 ^ 2 ^ 1 = 2.Loop ends.Result: 2To see why this works, expand the final expression:missing = 3 ^ (0^nums) ^ (1^nums) ^ (2^nums)missing = 3 ^ (0^3) ^ (1^0) ^ (2^1)missing = (0^0) ^ (1^1) ^ (3^3) ^ 2missing = 0 ^ 0 ^ 0 ^ 2 = 2Interview Tips✅ Do: Present both the summation and XOR solutions. Explain that both meet the time and space complexity requirements. Mentioning the potential overflow issue with the summation method for large n and how the XOR method avoids this is a strong sign of a thorough candidate.126✅ Do: Explain the properties of XOR that make the bit manipulation solution work. This demonstrates a fundamental understanding of bitwise operations.❌ Avoid: Only providing the sorting-based solution (O(n log n) time) or the hash set solution (O(n) space), as these fail to meet the follow-up constraints which are the core of the problem.Reverse Bits - Interview GuideProblemReverse the bits of a given 32-bit unsigned integer.1281. Clarifying QuestionsInput/Output: Is the input a 32-bit unsigned integer? (Yes). Should the output also be a 32-bit unsigned integer? (Yes).129Example: Can you provide an example? For n = 1 (binary ...001), the output should be 2^31 (binary 100...).2. Brute Force (Conceptual)There isn't a traditional "brute force" vs. "optimized" distinction for this problem in terms of asymptotic complexity. Any correct solution must process all 32 bits. The different approaches are more about implementation style and clarity. The most direct approach is to build the reversed number bit by bit.3. Optimized Solution (Bit-by-Bit Construction)Approach: The goal is to take the bit from position i and move it to position 31-i. This can be done iteratively. We can build the reversed number (result) from left to right while reading the input number (n) from right to left.The algorithm runs a loop 32 times:Left-shift the result by 1 (result <<= 1). This makes space for the next bit from n.Extract the least significant bit (LSB) of n using (n & 1).Add this LSB to result. This can be done with a bitwise OR (result |= (n & 1)).Right-shift n by 1 (n >>= 1) to process the next bit in the following iteration.129After 32 iterations, result will hold the fully reversed bit pattern of the original n.Time Complexity: O(1). The loop runs a fixed 32 times, independent of the value of n.129Space Complexity: O(1). A few variables are used to store the result and loop counter.4. Code (C++)C++#include <cstdint>
+
+class Solution {
+public:
+    uint32_t reverseBits(uint32_t n) {
+        uint32_t result = 0;
+        
+        for (int i = 0; i < 32; ++i) {
+            // 1. Make space for the next bit by left-shifting the result.
+            result <<= 1;
+            
+            // 2. Get the least significant bit of n.
+            uint32_t lsb = n & 1;
+            
+            // 3. Add the LSB to the result.
+            result |= lsb;
+            
+            // 4. Discard the LSB of n by right-shifting.
+            n >>= 1;
+        }
+        
+        return result;
+    }
+};
+5. Dry RunInput: n = 11 (binary ...00001011) - using an 8-bit example for brevity.Initial: result = 00000000, n = 00001011.i = 0: result <<= 1 (still 0). lsb = 1. result |= 1 -> 00000001. n >>= 1 -> 00000101.i = 1: result <<= 1 -> 00000010. lsb = 1. result |= 1 -> 00000011. n >>= 1 -> 00000010.i = 2: result <<= 1 -> 00000110. lsb = 0. result |= 0 -> 00000110. n >>= 1 -> 00000001.i = 3: result <<= 1 -> 00001100. lsb = 1. result |= 1 -> 00001101. n >>= 1 -> 00000000.i = 4 to 7: n is 0, so lsb is always 0. result will be left-shifted four more times.i=4: result = 00011010i=5: result = 00110100i=6: result = 01101000i=7: result = 11010000Result (8-bit): 11010000 (decimal 208). The full 32-bit result for n=11 would be 2952790016.Interview Tips✅ Do: Clearly explain the bit manipulation steps. "My approach is to build the reversed integer bit by bit. In each of 32 iterations, I shift my result to the left to make room, extract the last bit from the input number using a bitwise AND, and add it to my result. Then I shift the input number to the right to process the next bit.".130✅ Do: Be comfortable with bitwise operators (&, |, <<, >>). The interviewer is specifically testing this knowledge.❌ Avoid: Getting confused about the direction of shifts. The result is built by shifting left, while the input n is consumed by shifting right. Visualizing this on a whiteboard can be very helpful.Part III: Dynamic ProgrammingDynamic Programming (DP) is a powerful technique for solving optimization and counting problems by breaking them down into simpler, overlapping subproblems. A candidate's ability to identify a DP structure and formulate a recurrence relation is a strong signal of advanced algorithmic thinking.Climbing Stairs - Interview GuideProblemYou are climbing a staircase that takes n steps to reach the top. Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?.1311. Clarifying QuestionsInput: Is n always a positive integer? (Constraints say 1 <= n <= 45).131 What if n=0? (While not in the constraints, a logical answer is 1 way: do nothing).132Output: The problem asks for the number of distinct ways, where the order of steps matters (e.g., 1+2 is different from 2+1).1332. Brute Force (Recursive Approach)Approach: This problem has a natural recursive structure. To reach the n-th step, the last move must have been either a single step from step n-1 or a double step from step n-2. Therefore, the total number of ways to reach step n is the sum of the ways to reach step n-1 and the ways to reach step n-2.133This gives the recurrence relation: ways(n) = ways(n-1) + ways(n-2).The base cases are: ways(1) = 1 and ways(2) = 2.Time Complexity: O(2n). This is because many subproblems (e.g., ways(n-2)) are recomputed multiple times in different branches of the recursion tree, leading to exponential growth.133Space Complexity: O(n) due to the maximum depth of the recursion stack.3. Optimized SolutionsThe overlapping subproblems in the recursive solution are a clear indicator for dynamic programming.Optimized Solution 1: DP with Memoization (Top-Down)Approach: We can optimize the recursive solution by storing the results of subproblems in a memoization table (e.g., an array or hash map). Before computing ways(k), we first check if the result is already in our table. If it is, we return the stored value. If not, we compute it, store it in the table, and then return it. This ensures that each subproblem is solved only once.135Time Complexity: O(n). Each state from 1 to n is computed exactly once.Space Complexity: O(n) for the memoization table and the recursion stack.Optimized Solution 2: DP with Tabulation (Bottom-Up)Approach: Instead of recurring from the top down, we can build the solution from the bottom up. We create a DP array, say dp, of size n+1. We initialize the base cases: dp = 1 and dp = 2. Then, we iterate from i = 3 to n, filling the table using the same recurrence: dp[i] = dp[i-1] + dp[i-2].135Time Complexity: O(n). A single loop runs from 3 to n.Space Complexity: O(n) for the DP array.Optimized Solution 3: Space-Optimized DPApproach: The recurrence dp[i] = dp[i-1] + dp[i-2] shows that to compute the number of ways for the current step, we only need the results for the previous two steps. We don't need to store the entire DP array. We can use two variables to keep track of the last two values (let's call them one_step_back and two_steps_back) and iterate from 3 to n, updating them at each step. This is equivalent to calculating the Fibonacci sequence iteratively.134Time Complexity: O(n).Space Complexity: O(1).4. Code (C++ - Space-Optimized DP)C++class Solution {
+public:
+    int climbStairs(int n) {
+        if (n <= 2) {
+            return n;
+        }
+
+        // Base cases for the start of the iteration
+        int two_steps_back = 1; // ways(i-2), initially for n=1
+        int one_step_back = 2;  // ways(i-1), initially for n=2
+        
+        for (int i = 3; i <= n; ++i) {
+            int current_ways = one_step_back + two_steps_back;
+            // Update pointers for the next iteration
+            two_steps_back = one_step_back;
+            one_step_back = current_ways;
+        }
+        
+        return one_step_back;
+    }
+};
+5. Dry RunInput: n = 4Initial: n > 2. two_steps_back = 1, one_step_back = 2.i = 3:current_ways = 2 + 1 = 3.two_steps_back becomes 2.one_step_back becomes 3.i = 4:current_ways = 3 + 2 = 5.two_steps_back becomes 3.one_step_back becomes 5.Loop ends. Return one_step_back.Result: 5Interview Tips✅ Do: Follow the full progression from brute-force recursion to space-optimized DP. This is a perfect problem to demonstrate a deep understanding of DP principles: identifying overlapping subproblems, memoization, tabulation, and space optimization.136✅ Do: Explicitly state the connection to the Fibonacci sequence. "The recurrence relation ways(n) = ways(n-1) + ways(n-2) is the same as the Fibonacci sequence, just with slightly different base cases.".134❌ Avoid: Only giving the final, space-optimized solution. While correct, it misses the opportunity to showcase the thought process of how one arrives at that optimization, which is what interviewers are often most interested in.Coin Change - Interview GuideProblemYou are given an integer array coins representing coins of different denominations and an integer amount. Return the fewest number of coins needed to make up that amount. If that amount of money cannot be made up, return -1. You may assume an infinite number of each kind of coin.1391. Clarifying QuestionsInput: Are the coin denominations positive integers? (Yes). Is the amount a non-negative integer? (Yes).139Output: What if the amount is 0? (The output should be 0).139Edge Cases: What if it's impossible to make the amount? (Return -1).1392. Brute Force (Recursive Approach)Approach: This is a classic optimization problem that can be solved with recursion. We define a function, say minCoins(amount), which returns the minimum coins for that amount.The base case: minCoins(0) = 0. If amount < 0, it's an invalid path, so we can return an indicator of impossibility (like infinity).The recursive step: For a given amount, we can try using each coin c from the coins array. If we use coin c, the problem reduces to finding the minimum coins for amount - c. So, minCoins(amount) = 1 + min(minCoins(amount - c)) for all c in coins. We take the minimum over all possible coin choices.140Time Complexity: Exponential, roughly O(Sn), where S is the amount and n is the number of coin denominations. The recursion tree can be very wide and deep with many overlapping subproblems.140Space Complexity: O(S) due to the maximum recursion depth.3. Optimized Solution (Dynamic Programming - Bottom-Up)Approach: The recursive solution is inefficient because it repeatedly solves the same subproblems (e.g., minCoins(5) might be calculated many times). We can use dynamic programming to store and reuse these results. A bottom-up (tabulation) approach is very clean for this problem.We create a DP array, dp, of size amount + 1. dp[i] will store the minimum number of coins required to make the amount i.Initialize dp array of size amount + 1 with a value indicating infinity (e.g., amount + 1), representing that these amounts are not yet reachable.Set the base case: dp = 0, as 0 coins are needed to make an amount of 0.Iterate from i = 1 to amount. For each amount i:a. Iterate through each coin c in the coins array.b. If c <= i, it means we can potentially use this coin. The number of coins to make amount i would be 1 + dp[i - c] (1 for the current coin c, plus the minimum coins for the remaining amount).c. We update dp[i] with the minimum value found so far: dp[i] = min(dp[i], 1 + dp[i - c]).After the loops, if dp[amount] is still the infinity value, it means the amount is unreachable. Return -1. Otherwise, return dp[amount].141Time Complexity: O(S⋅n), where S is the amount and n is the number of coins. We have two nested loops.142Space Complexity: O(S) for the DP array.1424. Code (C++)C++#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    int coinChange(std::vector<int>& coins, int amount) {
+        // dp[i] will be storing the minimum number of coins required for amount i.
+        // Initialize with a value larger than any possible answer (amount + 1).
+        std::vector<int> dp(amount + 1, amount + 1);
+        
+        // Base case: 0 coins are needed to make an amount of 0.
+        dp = 0;
+        
+        // Build the DP table from amount 1 up to the target amount.
+        for (int i = 1; i <= amount; ++i) {
+            // For each amount, try every coin.
+            for (int coin : coins) {
+                // If the coin value is not greater than the current amount.
+                if (coin <= i) {
+                    // Update the minimum coins for amount i.
+                    // The number of coins is 1 (the current coin) + the minimum
+                    // coins needed for the remaining amount (i - coin).
+                    dp[i] = std::min(dp[i], dp[i - coin] + 1);
+                }
+            }
+        }
+        
+        // If dp[amount] was never updated from its initial large value,
+        // it means the amount cannot be formed.
+        return dp[amount] > amount? -1 : dp[amount];
+    }
+};
+5. Dry RunInput: coins = , amount = 5Initialization: dp =  (using 6 as infinity).i = 1:coin = 1: dp = min(6, dp + 1) = 1.i = 2:coin = 1: dp = min(6, dp + 1) = 2.coin = 2: dp = min(2, dp + 1) = 1.i = 3:coin = 1: dp = min(6, dp + 1) = 2.coin = 2: dp = min(2, dp + 1) = 2.i = 4:coin = 1: dp = min(6, dp + 1) = 3.coin = 2: dp = min(3, dp + 1) = 2.i = 5:coin = 1: dp = min(6, dp + 1) = 3.coin = 2: dp = min(3, dp + 1) = 3.coin = 5: dp = min(3, dp + 1) = 1.Final dp array: ``.Result: dp = 1.Interview Tips✅ Do: Start by explaining the brute-force recursive solution. This sets up the problem's structure and naturally leads to identifying the overlapping subproblems that motivate a DP solution.143✅ Do: Clearly define the state of your DP table. "I will use a DP array where dp[i] represents the minimum number of coins required to make change for amount i." This clarity is crucial for explaining DP solutions.141✅ Do: Be careful with the initialization of the DP array. Initializing with a value like amount + 1 is a robust way to represent infinity, as the number of coins can never exceed the amount (if a 1-cent coin is available). Checking dp[amount] > amount at the end is a clean way to detect if the amount was unreachable.142❌ Avoid: Confusing this problem with the variation that asks for the number of combinations to make change. That problem has a different DP state and recurrence. Clarifying the goal ("fewest number of coins" vs. "number of ways") is a good initial step.145Longest Increasing Subsequence - Interview GuideProblemGiven an integer array nums, return the length of the longest strictly increasing subsequence.147 A subsequence is a sequence that can be derived from an array by deleting some or no elements without changing the order of the remaining elements.1. Clarifying QuestionsSubsequence vs. Subarray: Confirm the definition. A subsequence does not have to be contiguous, unlike a subarray.147Strictly Increasing: Does "increasing" mean strictly increasing (>) or non-decreasing (>=)? (The problem states strictly increasing).147Input Properties: Can the array be empty? (Constraints say 1 <= length).147 Can it contain duplicates? (Yes).1482. Brute Force (Recursive Approach)Approach: The brute-force method involves generating all possible subsequences of the given array, checking if each is strictly increasing, and finding the length of the longest one that is. A recursive function solve(index, last_picked_index) can be defined, which explores two choices at each index:Include nums[index]: This is only possible if nums[index] is greater than nums[last_picked_index]. The length would be 1 + solve(index + 1, index).Exclude nums[index]: The length would be solve(index + 1, last_picked_index).The function returns the maximum of these two choices.149Time Complexity: O(2n). For each element, there are two choices (include or exclude), leading to an exponential number of subsequences to check.Space Complexity: O(n) for the recursion stack depth.3. Optimized SolutionsThe recursive approach has overlapping subproblems, making it a candidate for dynamic programming.Optimized Solution 1: Dynamic ProgrammingApproach: This is the standard O(n2) DP solution. We create a DP array, dp, of the same size as nums. dp[i] will store the length of the longest increasing subsequence that ends at index i.Initialize the dp array with all 1s, since every element by itself is an increasing subsequence of length 1.Iterate through the nums array with an outer loop from i = 1 to n-1.For each i, use an inner loop to iterate from j = 0 to i-1.If nums[i] > nums[j], it means nums[i] can extend the increasing subsequence that ends at j. We update dp[i] with max(dp[i], 1 + dp[j]).After the loops, the answer is the maximum value in the dp array, as the LIS could end at any index.150Time Complexity: O(n2) due to the nested loops.150Space Complexity: O(n) for the DP array.Optimized Solution 2: DP with Binary SearchApproach: A more advanced and efficient solution achieves O(nlogn) time. This approach maintains an auxiliary array, often called tails, which stores the smallest tail element of all increasing subsequences of a given length.tails[i] will be the smallest tail element of an increasing subsequence of length i+1. This tails array is always sorted.Initialize an empty tails array.Iterate through each num in the nums array.a. If num is greater than all elements in tails (i.e., greater than tails.back()), it can extend the longest subsequence found so far. Append num to tails.b. If num is not greater than all elements in tails, it means it can potentially be the new end of a shorter increasing subsequence. We find the smallest element in tails that is greater than or equal to num and replace it with num. This is done efficiently with a binary search (std::lower_bound in C++). This step is crucial: we are not forming the LIS itself,

@@ -1,0 +1,47 @@
+[
+  {
+    "title": "Two Sum",
+    "slug": "two-sum",
+    "category": "Array",
+    "difficulty": "Easy",
+    "problemStatement": "Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`. You may assume that each input would have **exactly one solution**, and you may not use the same element twice. You can return the answer in any order.",
+    "example": "**Input:** nums = [2,7,11,15], target = 9\n**Output:** [0,1]\n**Explanation:** Because nums[0] + nums[1] == 9, we return [0, 1].",
+    "constraints": "- 2 <= nums.length <= 10⁴\n- -10⁹ <= nums[i] <= 10⁹\n- -10⁹ <= target <= 10⁹\n- Only one valid answer exists.",
+    "solution": {
+      "cppCode": "#include <vector>\n#include <unordered_map>\n\nclass Solution {\npublic:\n    std::vector<int> twoSum(std::vector<int>& nums, int target) {\n        // Use a hash map to store numbers we've seen and their indices.\n        // Key: number, Value: index\n        std::unordered_map<int, int> numMap;\n\n        for (int i = 0; i < nums.size(); ++i) {\n            // Calculate the complement needed to reach the target.\n            int complement = target - nums[i];\n\n            // Check if the complement exists in our map.\n            if (numMap.find(complement) != numMap.end()) {\n                // If found, we have our pair. Return their indices.\n                return {numMap[complement], i};\n            }\n\n            // If complement is not found, add the current number and its index to the map.\n            numMap[nums[i]] = i;\n        }\n\n        // According to the problem statement, a solution always exists.\n        return {};\n    }\n};",
+      "explanation": "## Approach\n\nThe key insight is to use a hash map to store numbers we've already seen along with their indices. For each number, we calculate what complement we need to reach the target, then check if we've seen that complement before.\n\n## Algorithm\n\n1. **Initialize** a hash map to store number-index pairs\n2. **Iterate** through the array once\n3. **For each element:**\n   - Calculate the complement: `target - current_number`\n   - Check if complement exists in hash map\n   - If yes, return the indices\n   - If no, add current number and its index to hash map\n\n## Time & Space Complexity\n\n- **Time Complexity:** O(n) - Single pass through the array\n- **Space Complexity:** O(n) - Hash map can store up to n elements",
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)"
+    }
+  },
+  {
+    "title": "Best Time to Buy and Sell Stock",
+    "slug": "best-time-to-buy-and-sell-stock",
+    "category": "Array",
+    "difficulty": "Easy",
+    "problemStatement": "You are given an array `prices` where `prices[i]` is the price of a given stock on the `i`th day. You want to maximize your profit by choosing a **single day** to buy one stock and choosing a **different day in the future** to sell that stock. Return the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return `0`.",
+    "example": "**Input:** prices = [7,1,5,3,6,4]\n**Output:** 5\n**Explanation:** Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6-1 = 5. Note that buying on day 2 and selling on day 1 is not allowed because you must buy before you sell.",
+    "constraints": "- 1 <= prices.length <= 10⁵\n- 0 <= prices[i] <= 10⁴",
+    "solution": {
+      "cppCode": "#include <vector>\n#include <algorithm>\n#include <limits>\n\nclass Solution {\npublic:\n    int maxProfit(std::vector<int>& prices) {\n        // Initialize min_price_so_far to a very large value\n        int min_price_so_far = std::numeric_limits<int>::max();\n        int max_profit = 0;\n\n        for (int price : prices) {\n            // First, update the minimum price seen so far\n            min_price_so_far = std::min(min_price_so_far, price);\n\n            // Second, calculate the potential profit if we sell today\n            int potential_profit = price - min_price_so_far;\n\n            // Update the maximum profit if this transaction is better\n            max_profit = std::max(max_profit, potential_profit);\n        }\n\n        return max_profit;\n    }\n};",
+      "explanation": "## Approach\n\nThis is a greedy algorithm that tracks the minimum price seen so far and calculates the maximum profit that can be achieved by selling on each day.\n\n## Algorithm\n\n1. **Initialize** `min_price_so_far` to a very large value and `max_profit` to 0\n2. **For each price:**\n   - Update `min_price_so_far` to be the minimum of current price and previous minimum\n   - Calculate potential profit: `current_price - min_price_so_far`\n   - Update `max_profit` to be the maximum of current profit and previous maximum\n\n## Key Insight\n\nTo maximize profit for a potential sale on day j, we must have bought the stock at the absolute minimum price on a day i < j.\n\n## Time & Space Complexity\n\n- **Time Complexity:** O(n) - Single pass through the array\n- **Space Complexity:** O(1) - Only two variables used",
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)"
+    }
+  },
+  {
+    "title": "Contains Duplicate",
+    "slug": "contains-duplicate",
+    "category": "Array",
+    "difficulty": "Easy",
+    "problemStatement": "Given an integer array `nums`, return `true` if any value appears **at least twice** in the array, and return `false` if every element is distinct.",
+    "example": "**Input:** nums = [1,2,3,1]\n**Output:** true\n\n**Input:** nums = [1,2,3,4]\n**Output:** false",
+    "constraints": "- 1 <= nums.length <= 10⁵\n- -10⁹ <= nums[i] <= 10⁹",
+    "solution": {
+      "cppCode": "#include <vector>\n#include <unordered_set>\n\nclass Solution {\npublic:\n    bool containsDuplicate(std::vector<int>& nums) {\n        // Use an unordered_set to keep track of numbers we have seen\n        std::unordered_set<int> seen;\n\n        for (int num : nums) {\n            // Check if the current number is already in the set\n            if (seen.count(num)) {\n                // If it exists, we have found a duplicate\n                return true;\n            }\n            // If it's a new number, insert it into our set\n            seen.insert(num);\n        }\n\n        // If we finish the loop without finding any duplicates, return false\n        return false;\n    }\n};",
+      "explanation": "## Approach\n\nUse a hash set to track numbers we've already seen. If we encounter a number that's already in the set, we've found a duplicate.\n\n## Algorithm\n\n1. **Initialize** an empty hash set\n2. **Iterate** through the array\n3. **For each number:**\n   - Check if it exists in the set\n   - If yes, return true (duplicate found)\n   - If no, add it to the set\n4. **Return false** if no duplicates found\n\n## Alternative Approaches\n\n- **Sorting:** Sort the array and check adjacent elements (O(n log n) time, O(1) space)\n- **Brute Force:** Check every pair (O(n²) time, O(1) space)\n\n## Time & Space Complexity\n\n- **Time Complexity:** O(n) - Single pass through the array\n- **Space Complexity:** O(n) - Hash set can store up to n elements",
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)"
+    }
+  }
+]

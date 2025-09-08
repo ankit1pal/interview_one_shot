@@ -1,0 +1,375 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+/* Main app container with CSS Grid */
+.app-container {
+  display: grid;
+  height: 100vh;
+  grid-template-columns: 300px 1fr 300px;
+  grid-template-rows: 1fr auto;
+  grid-template-areas:
+    "left-panel content right-panel"
+    "bottom-panel bottom-panel bottom-panel";
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #f8fafc;
+}
+
+/* Panel styles */
+.left-panel,
+.right-panel,
+.bottom-panel {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.left-panel {
+  grid-area: left-panel;
+}
+
+.right-panel {
+  grid-area: right-panel;
+}
+
+.bottom-panel {
+  grid-area: bottom-panel;
+  max-height: 200px;
+}
+
+.content-display {
+  grid-area: content;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+/* Panel headers */
+.panel-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Topic list styles */
+.topic-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.topic-item {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.2s ease;
+}
+
+.topic-item:last-child {
+  border-bottom: none;
+}
+
+.topic-item:hover {
+  background-color: #f8fafc;
+}
+
+.topic-button {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #475569;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.topic-button:hover {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+.topic-button.active {
+  background-color: #dbeafe;
+  color: #1e40af;
+  border-right: 3px solid #3b82f6;
+}
+
+.topic-title {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.topic-meta {
+  font-size: 0.8rem;
+  color: #64748b;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.difficulty-badge {
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.difficulty-easy {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.difficulty-medium {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.difficulty-hard {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+/* Content display styles */
+.content-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.content-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.content-meta {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.content-category {
+  background-color: #e0e7ff;
+  color: #3730a3;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-weight: 500;
+}
+
+.content-section {
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Code block styles */
+.code-block {
+  background-color: #1e293b;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+  border: 1px solid #334155;
+}
+
+.code-block pre {
+  margin: 0;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Loading and error states */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #dc2626;
+  font-size: 1.1rem;
+  text-align: center;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.welcome {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #64748b;
+  font-size: 1.2rem;
+  text-align: center;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.welcome h2 {
+  color: #1e293b;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.welcome p {
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .app-container {
+    grid-template-columns: 250px 1fr 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr auto;
+    grid-template-areas:
+      "left-panel"
+      "right-panel"
+      "content"
+      "bottom-panel";
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+  
+  .left-panel,
+  .right-panel,
+  .bottom-panel {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  .content-display {
+    padding: 1rem;
+  }
+  
+  .content-title {
+    font-size: 1.5rem;
+  }
+}
+
+/* Markdown content styles */
+.markdown-content {
+  line-height: 1.6;
+  color: #374151;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  color: #1e293b;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.markdown-content h1 {
+  font-size: 1.875rem;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0.5rem;
+}
+
+.markdown-content h2 {
+  font-size: 1.5rem;
+}
+
+.markdown-content h3 {
+  font-size: 1.25rem;
+}
+
+.markdown-content p {
+  margin-bottom: 1rem;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.markdown-content li {
+  margin-bottom: 0.25rem;
+}
+
+.markdown-content code {
+  background-color: #f1f5f9;
+  color: #e11d48;
+  padding: 0.125rem 0.25rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.markdown-content pre {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.markdown-content pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid #3b82f6;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #64748b;
+  font-style: italic;
+}
